@@ -11,7 +11,7 @@ If you came here from my earlier work [Predicting Hospital Readmission using NLP
 
 ## TLDR
 
-My results for predicting readmission **using only the first few days of notes in the intensive care unit (not discharge summaries) **are:
+My results for predicting readmission **using only the first few days of notes in the intensive care unit (not discharge summaries)** are:
 
 * For 2days AUROC=0.748 and for 3days AUROC=0.758.
 
@@ -21,7 +21,7 @@ See the bottom of this article for full details.
 
 ## Introduction
 
-I recently read this great paper “ClinicalBert: Modeling Clinical Notes and Predicting Hospital Readmission” by Huang et al ([*Paper](https://arxiv.org/pdf/1904.05342.pdf) & [GitHub](https://github.com/kexinhuang12345/clinicalBERT)*).
+I recently read this great paper “ClinicalBert: Modeling Clinical Notes and Predicting Hospital Readmission” by Huang et al ([Paper](https://arxiv.org/pdf/1904.05342.pdf) & [GitHub](https://github.com/kexinhuang12345/clinicalBERT)).
 
 They develop ClinicalBert by applying BERT (bidirectional encoder representations from transformers) to clinical notes.
 
@@ -99,11 +99,11 @@ In this tutorial, we will use ClinicalBERT to train a readmission classifier. Sp
 
 You might be wondering [why](https://mccormickml.com/2019/07/22/BERT-fine-tuning/) we should do fine-tuning rather than train a specific deep learning model (BiLSTM, Word2Vec, etc.) that is well suited for the specific NLP task you need?
 
-* **Quicker Development: **The pre-trained ClinicalBERT model weights already encode a lot of information about our language. As a result, it takes much less time to train our fine-tuned model — it is as if we have already trained the bottom layers of our network extensively and only need to gently tune them while using their output as features for our classification task. For example in the original BERT paper the authors recommend only 2–4 epochs of training for fine-tuning BERT on a specific NLP task, compared to the hundreds of GPU hours needed to train the original BERT model or a LSTM from scratch!
+* **Quicker Development:** The pre-trained ClinicalBERT model weights already encode a lot of information about our language. As a result, it takes much less time to train our fine-tuned model — it is as if we have already trained the bottom layers of our network extensively and only need to gently tune them while using their output as features for our classification task. For example in the original BERT paper the authors recommend only 2–4 epochs of training for fine-tuning BERT on a specific NLP task, compared to the hundreds of GPU hours needed to train the original BERT model or a LSTM from scratch!
 
-* **Less Data: **Because of the pretrained weights this method allows us to fine-tune our task on a much smaller dataset than would be required in a model that is built from scratch. A major drawback of NLP models built from scratch is that we often need a prohibitively large dataset in order to train our network to reasonable accuracy, meaning a lot of time and energy had to be put into dataset creation. By fine-tuning BERT, we are now able to get away with training a model to good performance on a much smaller amount of training data.
+* **Less Data:** Because of the pretrained weights this method allows us to fine-tune our task on a much smaller dataset than would be required in a model that is built from scratch. A major drawback of NLP models built from scratch is that we often need a prohibitively large dataset in order to train our network to reasonable accuracy, meaning a lot of time and energy had to be put into dataset creation. By fine-tuning BERT, we are now able to get away with training a model to good performance on a much smaller amount of training data.
 
-* **Better Results: **Fine-tuning is shown to achieve state of the art results with minimal task-specific adjustments for a wide variety of tasks: classification, language inference, semantic similarity, question answering, etc. Rather than implementing custom and sometimes-obscure architectures shown to work well on a specific task, fine-tuning is shown to be a better (or at least equal) alternative.
+* **Better Results:** Fine-tuning is shown to achieve state of the art results with minimal task-specific adjustments for a wide variety of tasks: classification, language inference, semantic similarity, question answering, etc. Rather than implementing custom and sometimes-obscure architectures shown to work well on a specific task, fine-tuning is shown to be a better (or at least equal) alternative.
 
 ### Fine-tuning Details
 
@@ -265,7 +265,7 @@ The formula can be found in the vote_score function in the **temp** variable Rem
     def vote_score(df, score, readmission_mode, output_dir):
         df['pred_score'] = score
         df_sort = df.sort_values(by=['ID'])
-        #score 
+        #score
         **temp = (df_sort.groupby(['ID'])['pred_score'].agg(max)+df_sort.groupby(['ID'])['pred_score'].agg(sum)/2)/(1+df_sort.groupby(['ID'])['pred_score'].agg(len)/2)**
         x = df_sort.groupby(['ID'])['Label'].agg(np.min).values
         df_out = pd.DataFrame({'logits': temp.values, 'ID': x})
@@ -298,7 +298,7 @@ Each model is evaluated using three metrics:
 
 1. Recall at precision of 80% (RP80): For the readmission task, false positives are important. To minimize the number of false positives and thus minimize the risk of alarm fatigue, we set the precision to 80%. In other words we set a 20% false positive rate out of the predicted positive class and use the corresponding threshold to calculate recall. This leads to a clinically-relevant metric that enables us to build models that control the false positive rate.
 
-<iframe src="https://medium.com/media/86995103ba26b36e6898be1b58ccb058" frameborder=0></iframe>
+Here is the code: https://gist.github.com/nwams/faef6411b342cf163d6c8fb6267433f9#file-clinicalbert-evaluation-py
 
 Here are the results output from Predicting Readmission on the Early Notes:
 
@@ -310,7 +310,7 @@ Here are the results output from Predicting Readmission on the Early Notes:
 
 I recommend reading Jason Brownlee’s [article](https://machinelearningmastery.com/roc-curves-and-precision-recall-curves-for-classification-in-python/).
 
-* [**Precision](https://machinelearningmastery.com/roc-curves-and-precision-recall-curves-for-classification-in-python/)** is a ratio of the number of true positives divided by the sum of the true positives and false positives. **It describes how good a model is at predicting the positive class**. It is also referred to as the positive predictive value.
+* [**Precision**](https://machinelearningmastery.com/roc-curves-and-precision-recall-curves-for-classification-in-python/) is a ratio of the number of true positives divided by the sum of the true positives and false positives. **It describes how good a model is at predicting the positive class**. It is also referred to as the positive predictive value.
 
 * **Recall**, a.k.a. sensitivity, is calculated as the ratio of the number of true positives divided by the sum of the true positives and the false negatives.
 
